@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:just_audio/just_audio.dart';
 import 'dart:math';
 
 void main() {
@@ -41,6 +42,15 @@ class HomePage extends StatefulWidget {
 
 class _HomeState extends State<HomePage> {
   double _thumbPercent = 0.4;
+
+  // https://pub.dev/packages/just_audio/example
+  final player = new AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+    player.setAsset('assets/20min.mp3');
+  }
 
   // TODO: Define Radial SeekBar like here
   // TODO: via https://pub.dev/packages/sleek_circular_slider
@@ -163,13 +173,38 @@ class _HomeState extends State<HomePage> {
                       height: 82.0,
                       decoration: BoxDecoration(
                           color: widget.primarySwatch, shape: BoxShape.circle),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.play_arrow,
-                          size: 45.0,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
+                      child: StreamBuilder<PlayerState>(
+                        stream: player.playerStateStream,
+                        builder: (context, snapshot) {
+                          final playerState = snapshot.data;
+                          final processingState = playerState?.processingState;
+                          final playing = playerState?.playing;
+                          if (processingState == ProcessingState.loading ||
+                              processingState == ProcessingState.buffering) {
+                            return Container(
+                              margin: EdgeInsets.all(8.0),
+                              width: 64.0,
+                              height: 64.0,
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (playing != true) {
+                            return IconButton(
+                              icon: Icon(Icons.play_arrow, size: 45.0, color: Colors.white),
+                              onPressed: player.play,
+                            );
+                          } else if (processingState != ProcessingState.completed) {
+                            return IconButton(
+                              icon: Icon(Icons.pause, size: 45.0, color: Colors.white),
+                              onPressed: player.pause,
+                            );
+                          } else {
+                            return IconButton(
+                              icon: Icon(Icons.replay, size: 45.0, color: Colors.white),
+                              onPressed: () => player.seek(Duration.zero,
+                                  index: player.effectiveIndices.first),
+                            );
+                          }
+                        },
                       ),
                     ),
                   )
