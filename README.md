@@ -2,6 +2,18 @@
 
 App for the Wheel of Awareness practice
 
+## Done
+
+- play 30min, 20min, or 7min wheel
+- play in background
+- link to website
+
+## Todo
+
+- replace wheel image
+- breath awareness exercise
+- Cutted full wheel
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
