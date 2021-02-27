@@ -12,7 +12,7 @@ class WheelOfAwareness extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    String title =  "30 Minutes Exercise";
+    String title =  "30 Minutes Practice";
     String description = "Including Awareness of awareness\nand kindness statements";
     return MaterialApp(
       title: 'Wheel of Awareness',
@@ -239,13 +239,13 @@ class _HomeState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  exercise("30 Minutes Exercise",
+                  practice("30 Minutes Practice",
                       "Full wheel including Awareness of\n awareness and kindness statements",
                       "assets/30min.mp3"),
-                  exercise("20 Minutes Exercise",
+                  practice("20 Minutes Practice",
                       "Basic wheel without Awareness of\n awareness and kindness statements",
                       "assets/20min.mp3"),
-                  exercise("7 Minutes Exercise",
+                  practice("7 Minutes Practice",
                       "The breath becomes a pacer for\nthe movement of the spoke of attention",
                       "assets/7min.mp3"),
                 ],
@@ -284,7 +284,7 @@ class _HomeState extends State<HomePage> {
         ));
   }
 
-  Widget exercise(String title, String description, String mp3) {
+  Widget practice(String title, String description, String mp3) {
     return Padding(
         padding: EdgeInsets.all(0.0),
         child: TextButton(
