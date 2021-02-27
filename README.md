@@ -1,6 +1,8 @@
-# wheel_of_awareness
+# Wheel of Awareness Practice - Flutter App
 
 App for the Wheel of Awareness practice
+
+![](preview.png)
 
 ## Done
 
@@ -14,15 +16,7 @@ App for the Wheel of Awareness practice
 - breath awareness exercise
 - Cutted full wheel
 
-## Getting Started
+## Copyright
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+All mp3 and jpg files in the assets folder are available at and belong to https://drdansiegel.com/wheel-of-awareness/ (last checked 27.02.21).
+If any owner of the used resources is unhappy, please take your time to contact me and I will remove them.
