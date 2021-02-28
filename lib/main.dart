@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:just_audio/just_audio.dart';
-import 'dart:math';
 
 void main() {
   runApp(WheelOfAwareness());
@@ -12,8 +11,9 @@ class WheelOfAwareness extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    String title =  "30 Minutes Practice";
-    String description = "Including Awareness of awareness\nand kindness statements";
+    String title = "30 Minutes Practice";
+    String description =
+        "Including Awareness of awareness\nand kindness statements";
     return MaterialApp(
       title: 'Wheel of Awareness',
       debugShowCheckedModeBanner: false,
@@ -23,7 +23,9 @@ class WheelOfAwareness extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(
-          title: title, description: description, primarySwatch: Color(0xFF2C566E)),
+          title: title,
+          description: description,
+          primarySwatch: Color(0xFF2C566E)),
     );
   }
 }
@@ -32,7 +34,8 @@ class HomePage extends StatefulWidget {
   final Color primarySwatch;
   String title;
   String description;
-  HomePage({Key key, this.title, this.description, this.primarySwatch}) : super(key: key);
+  HomePage({Key key, this.title, this.description, this.primarySwatch})
+      : super(key: key);
 
   // This class is the configuration for the state. It holds the values
   // provided by the parent (in this case the App widget) and
@@ -44,44 +47,35 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage> {
-  double _thumbPercent = 0.4;
-
-  // https://pub.dev/packages/just_audio/example
-  final player = new AudioPlayer();
-
+  final _player = new AudioPlayer();
 
   @override
   void initState() {
     super.initState();
-    player.setAsset('assets/30min.mp3');
+    _player.setAsset('assets/30min.mp3');
   }
 
-  // TODO: Define Radial SeekBar like here
-  // TODO: via https://pub.dev/packages/sleek_circular_slider
+  _buildCircularSeekBar(double duration, double position) {
+    return SleekCircularSlider(
+        initialValue: position,
+        max: duration,
+        appearance: CircularSliderAppearance(
+            size: (MediaQuery.of(context).size.width * 0.47),
+            angleRange: 360,
+            startAngle: 270,
+            customWidths: CustomSliderWidths(progressBarWidth: 8),
+            customColors: CustomSliderColors(
+                trackColor: widget.primarySwatch,
+                progressBarColors: [Color(0xFF2C566E), Color(0xFFADD6F2)]),
+            infoProperties:
+                InfoProperties(mainLabelStyle: TextStyle(fontSize: 0))),
+        onChangeEnd: (double newPosition) {
+          _player.seek(Duration(seconds: newPosition.truncate()));
+        });
+  }
 
-  // Widget _buildRadialSeekBar() {
-  //   return RadialSeekBar(
-  //     trackColor: Colors.red.withOpacity(.5),
-  //     trackWidth: 2.0,
-  //     progressColor: widget.primarySwatch,
-  //     progressWidth: 5.0,
-  //     thumbPercent: _thumbPercent,
-  //     thumb: CircleThumb(
-  //       color: widget.primarySwatch,
-  //       diameter: 20.0,
-  //     ),
-  //     progress: _thumbPercent,
-  //     onDragUpdate: (double percent) {
-  //       setState(() {
-  //         _thumbPercent = percent;
-  //       });
-  //     },
-  //   );
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    var wheelSeekBar = <Widget>[
+  _buildWheelAndSeekBar() {
+    return <Widget>[
       SizedBox(
         height: 20.0,
       ),
@@ -90,22 +84,38 @@ class _HomeState extends State<HomePage> {
           child: Container(
             child: Stack(
               children: <Widget>[
-                Container(
-                    // decoration: BoxDecoration(
-                    //     color: widget.primarySwatch.withOpacity(.5),
-                    //     shape: BoxShape.circle),
-                    // child: Padding(
-                    //   padding: const EdgeInsets.all(12.0)
-                    //   //child: Null, //_buildRadialSeekBar(), // TODO Insert seekbar here
-                    // ),
-                    ),
                 Center(
                   child: Container(
                     child: Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.fromLTRB(3,31,10,0),
                       child: Image.asset(
                         "assets/woa.jpg",
                         fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: StreamBuilder<Duration>(
+                        stream: _player.durationStream,
+                        builder: (context, snapshot) {
+                          final duration = snapshot.data ?? Duration.zero;
+                          return StreamBuilder<Duration>(
+                            stream: _player.positionStream,
+                            builder: (context, snapshot) {
+                              var position = snapshot.data ?? Duration.zero;
+                              if (position > duration) {
+                                position = duration;
+                              }
+                              return _buildCircularSeekBar(
+                                  duration.inSeconds.truncateToDouble(),
+                                  position.inSeconds.truncateToDouble());
+                            },
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -119,8 +129,10 @@ class _HomeState extends State<HomePage> {
         height: 20.0,
       )
     ];
+  }
 
-    var activeExcercise = <Widget>[
+  _buildCurrentPractice() {
+    return <Widget>[
       Column(
         children: <Widget>[
           Text(
@@ -147,8 +159,10 @@ class _HomeState extends State<HomePage> {
         height: 0,
       )
     ];
+  }
 
-    var playButton = <Widget>[
+  _buildPlayButton() {
+    return <Widget>[
       Container(
         width: 350.0,
         height: 100.0,
@@ -162,7 +176,7 @@ class _HomeState extends State<HomePage> {
                 decoration: BoxDecoration(
                     color: widget.primarySwatch, shape: BoxShape.circle),
                 child: StreamBuilder<PlayerState>(
-                  stream: player.playerStateStream,
+                  stream: _player.playerStateStream,
                   builder: (context, snapshot) {
                     final playerState = snapshot.data;
                     final processingState = playerState?.processingState;
@@ -179,20 +193,20 @@ class _HomeState extends State<HomePage> {
                       return IconButton(
                         icon: Icon(Icons.play_arrow,
                             size: 45.0, color: Colors.white),
-                        onPressed: player.play,
+                        onPressed: _player.play,
                       );
                     } else if (processingState != ProcessingState.completed) {
                       return IconButton(
                         icon:
                             Icon(Icons.pause, size: 45.0, color: Colors.white),
-                        onPressed: player.pause,
+                        onPressed: _player.pause,
                       );
                     } else {
                       return IconButton(
                         icon:
                             Icon(Icons.replay, size: 45.0, color: Colors.white),
-                        onPressed: () => player.seek(Duration.zero,
-                            index: player.effectiveIndices.first),
+                        onPressed: () => _player.seek(Duration.zero,
+                            index: _player.effectiveIndices.first),
                       );
                     }
                   },
@@ -203,8 +217,10 @@ class _HomeState extends State<HomePage> {
         ),
       )
     ];
+  }
 
-    var switchExcercise = <Widget>[
+  _buildPracticeSwitch() {
+    return <Widget>[
       Container(
         height: 150.0,
         width: double.infinity,
@@ -239,13 +255,16 @@ class _HomeState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  practice("30 Minutes Practice",
+                  practice(
+                      "30 Minutes Practice",
                       "Full wheel including Awareness of\n awareness and kindness statements",
                       "assets/30min.mp3"),
-                  practice("20 Minutes Practice",
+                  practice(
+                      "20 Minutes Practice",
                       "Basic wheel without Awareness of\n awareness and kindness statements",
                       "assets/20min.mp3"),
-                  practice("7 Minutes Practice",
+                  practice(
+                      "7 Minutes Practice",
                       "The breath becomes a pacer for\nthe movement of the spoke of attention",
                       "assets/7min.mp3"),
                 ],
@@ -258,7 +277,10 @@ class _HomeState extends State<HomePage> {
         height: 10,
       )
     ];
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return new Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -279,8 +301,10 @@ class _HomeState extends State<HomePage> {
           ],
         ),
         body: Column(
-          children:
-              wheelSeekBar + activeExcercise + playButton + switchExcercise,
+          children: _buildWheelAndSeekBar() +
+              _buildCurrentPractice() +
+              _buildPlayButton() +
+              _buildPracticeSwitch(),
         ));
   }
 
@@ -301,8 +325,8 @@ class _HomeState extends State<HomePage> {
               widget.title = title;
               widget.description = description;
             });
-            await player.stop();
-            player.setAsset(mp3);
+            await _player.stop();
+            _player.setAsset(mp3);
           },
         ));
   }
