@@ -60,10 +60,10 @@ class _HomeState extends State<HomePage> {
         initialValue: position,
         max: duration,
         appearance: CircularSliderAppearance(
-            size: (MediaQuery.of(context).size.width * 0.47),
+            size: 300,
             angleRange: 360,
             startAngle: 270,
-            customWidths: CustomSliderWidths(progressBarWidth: 8),
+            customWidths: CustomSliderWidths(progressBarWidth: 10, trackWidth: 3),
             customColors: CustomSliderColors(
                 trackColor: widget.primarySwatch,
                 progressBarColors: [Color(0xFF2C566E), Color(0xFFADD6F2)]),
@@ -87,9 +87,9 @@ class _HomeState extends State<HomePage> {
                 Center(
                   child: Container(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(3,31,10,0),
+                      padding: const EdgeInsets.all(10),
                       child: Image.asset(
-                        "assets/woa.jpg",
+                        "assets/wheel_of_awareness.png",
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -98,11 +98,11 @@ class _HomeState extends State<HomePage> {
                 Center(
                   child: Container(
                     child: Padding(
-                      padding: const EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(10),
                       child: StreamBuilder<Duration>(
                         stream: _player.durationStream,
                         builder: (context, snapshot) {
-                          final duration = snapshot.data ?? Duration.zero;
+                          final duration = snapshot.data ?? Duration(seconds: 360);
                           return StreamBuilder<Duration>(
                             stream: _player.positionStream,
                             builder: (context, snapshot) {
