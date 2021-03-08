@@ -3,6 +3,8 @@ import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:just_audio/just_audio.dart';
 
+import 'str.dart';
+
 void main() {
   runApp(WheelOfAwareness());
 }
@@ -11,11 +13,10 @@ class WheelOfAwareness extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    String title = "30 Minutes Practice";
-    String description =
-        "Including Awareness of awareness\nand kindness statements";
+    String title = Str.title_23m;
+    String description = Str.descr_23m;
     return MaterialApp(
-      title: 'Wheel of Awareness',
+      title: Str.app_title,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
@@ -34,6 +35,7 @@ class HomePage extends StatefulWidget {
   final Color primarySwatch;
   String title;
   String description;
+
   HomePage({Key key, this.title, this.description, this.primarySwatch})
       : super(key: key);
 
@@ -52,7 +54,7 @@ class _HomeState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _player.setAsset('assets/30min.mp3');
+    _player.setAsset('assets/23min.mp3');
   }
 
   _buildCircularSeekBar(double duration, double position) {
@@ -63,7 +65,8 @@ class _HomeState extends State<HomePage> {
             size: 300,
             angleRange: 360,
             startAngle: 270,
-            customWidths: CustomSliderWidths(progressBarWidth: 10, trackWidth: 3),
+            customWidths:
+                CustomSliderWidths(progressBarWidth: 10, trackWidth: 3),
             customColors: CustomSliderColors(
                 trackColor: widget.primarySwatch,
                 progressBarColors: [Color(0xFF2C566E), Color(0xFFADD6F2)]),
@@ -102,7 +105,8 @@ class _HomeState extends State<HomePage> {
                       child: StreamBuilder<Duration>(
                         stream: _player.durationStream,
                         builder: (context, snapshot) {
-                          final duration = snapshot.data ?? Duration(seconds: 360);
+                          final duration =
+                              snapshot.data ?? Duration(seconds: 360);
                           return StreamBuilder<Duration>(
                             stream: _player.positionStream,
                             builder: (context, snapshot) {
@@ -250,24 +254,31 @@ class _HomeState extends State<HomePage> {
                         bottomLeft: Radius.circular(30.0))),
               ),
             ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  practice(
-                      "30 Minutes Practice",
-                      "Full wheel including Awareness of\n awareness and kindness statements",
-                      "assets/30min.mp3"),
-                  practice(
-                      "20 Minutes Practice",
-                      "Basic wheel without Awareness of\n awareness and kindness statements",
-                      "assets/20min.mp3"),
-                  practice(
-                      "7 Minutes Practice",
-                      "The breath becomes a pacer for\nthe movement of the spoke of attention",
-                      "assets/7min.mp3"),
-                ],
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(4),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    practice(
+                        Str.title_30m,
+                        Str.descr_30m,
+                        "assets/30min.mp3"),
+                    practice(
+                        Str.title_23m,
+                        Str.descr_23m,
+                        "assets/23min.mp3"),
+                    practice(
+                        Str.title_20m,
+                        Str.descr_20m,
+                        "assets/20min.mp3"),
+                    practice(
+                        Str.title_7m,
+                        Str.descr_7m,
+                        "assets/7min.mp3"),
+                  ],
+                ),
               ),
             )
           ],
@@ -286,7 +297,7 @@ class _HomeState extends State<HomePage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          title: Text("Wheel of Awareness",
+          title: Text(Str.app_title,
               style:
                   TextStyle(color: widget.primarySwatch, fontFamily: "Nexa")),
           centerTitle: true,
@@ -294,7 +305,7 @@ class _HomeState extends State<HomePage> {
             IconButton(
               icon: Icon(Icons.link, color: widget.primarySwatch),
               onPressed: () async {
-                const url = "https://drdansiegel.com/wheel-of-awareness/";
+                const url = Str.website;
                 if (await canLaunch(url)) await launch(url);
               },
             )
@@ -309,25 +320,23 @@ class _HomeState extends State<HomePage> {
   }
 
   Widget practice(String title, String description, String mp3) {
-    return Padding(
-        padding: EdgeInsets.all(0.0),
-        child: TextButton(
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: widget.primarySwatch,
-                fontSize: 18.0,
-                fontFamily: (widget.title == title) ? "Nexa" : "NexaLight"),
-          ),
-          onPressed: () async {
-            setState(() {
-              widget.title = title;
-              widget.description = description;
-            });
-            await _player.stop();
-            _player.setAsset(mp3);
-          },
-        ));
+    return TextButton(
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: widget.primarySwatch,
+            fontSize: 18.0,
+            fontFamily: (widget.title == title) ? "Nexa" : "NexaLight"),
+      ),
+      onPressed: () async {
+        setState(() {
+          widget.title = title;
+          widget.description = description;
+        });
+        await _player.stop();
+        _player.setAsset(mp3);
+      },
+    );
   }
 }

@@ -11,11 +11,12 @@ App for the Wheel of Awareness practice
 - link to website
 - circular seekbar
 - replace wheel image
+- Cutted full wheel
 
 ## Todo
 
 - breath awareness exercise
-- Cutted full wheel
+- App icon: https://pub.dev/packages/flutter_launcher_icons
 
 ## Copyright
 
