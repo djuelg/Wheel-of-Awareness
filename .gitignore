@@ -1,3 +1,6 @@
+# Copyrighted audio
+assets/*.mp3
+
 # Miscellaneous
 *.class
 *.log

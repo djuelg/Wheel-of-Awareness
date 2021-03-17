@@ -20,6 +20,7 @@ App for the Wheel of Awareness practice
 
 ## Copyright
 
-All mp3 files in the assets folder are available at and belong to https://drdansiegel.com/wheel-of-awareness/ (last checked 27.02.21).
-Design is based on https://github.com/devefy/Flutter-Music-Player-UI/.
-If any owner of the used resources is unhappy, please take your time to contact me and I will remove them.
+This app is designed to play the audio files available at https://drdansiegel.com/wheel-of-awareness/ (last checked 27.02.21).
+Since I don't have official permission to use them, they are not part of the repository anymore.
+
+The design is based on https://github.com/devefy/Flutter-Music-Player-UI/.
