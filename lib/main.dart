@@ -13,8 +13,8 @@ class WheelOfAwareness extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    String title = Str.title_23m;
-    String description = Str.descr_23m;
+    String title = Str.title_custom;
+    String description = Str.descr_custom;
     return MaterialApp(
       title: Str.app_title,
       debugShowCheckedModeBanner: false,
@@ -262,13 +262,13 @@ class _HomeState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     practice(
+                        Str.title_custom,
+                        Str.descr_custom,
+                        "assets/23min.mp3"),
+                    practice(
                         Str.title_30m,
                         Str.descr_30m,
                         "assets/30min.mp3"),
-                    practice(
-                        Str.title_23m,
-                        Str.descr_23m,
-                        "assets/23min.mp3"),
                     practice(
                         Str.title_20m,
                         Str.descr_20m,
@@ -308,6 +308,12 @@ class _HomeState extends State<HomePage> {
                 const url = Str.website;
                 if (await canLaunch(url)) await launch(url);
               },
+            ),
+            IconButton(
+              icon: Icon(Icons.access_time, color: widget.primarySwatch), // TODO: Write functions that opens Dialog
+              onPressed: () async {
+                _showCustomDurationDialog();
+              },
             )
           ],
         ),
@@ -317,6 +323,35 @@ class _HomeState extends State<HomePage> {
               _buildPlayButton() +
               _buildPracticeSwitch(),
         ));
+  }
+
+  Future<void> _showCustomDurationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must NOT tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(Str.dialog_title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text(Str.dialog_descr)
+                // TODO Add https://pub.dev/packages/flutter_spinbox
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(Str.dialog_save),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // TODO Provide duration to spinner
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget practice(String title, String description, String mp3) {
