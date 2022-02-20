@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:flutter_spinbox/flutter_spinbox.dart';
 
 import 'str.dart';
 
@@ -50,11 +53,69 @@ class HomePage extends StatefulWidget {
 
 class _HomeState extends State<HomePage> {
   final _player = new AudioPlayer();
-
+  var _customPracticeSleep = false;
+  var _customPracticeDuration = 23; // TODO Load from settings
+  var _dialogCustomPracticeDuration = 23; // TODO Load from settings
   @override
   void initState() {
     super.initState();
     _player.setAsset('assets/23min.mp3');
+  }
+
+  Timer continueAfterTimeout([int seconds]) =>
+      Timer(Duration(seconds: seconds), _player.play);
+
+  @override
+  Widget build(BuildContext context) {
+    buildAdditionalSilenceTimer();
+
+    return new Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          title: Text(Str.app_title,
+              style:
+              TextStyle(color: widget.primarySwatch, fontFamily: "Nexa")),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.access_time, color: widget.primarySwatch),
+              onPressed: () async {
+                _showCustomDurationDialog();
+              },
+            ),
+            // IconButton(
+            //   icon: Icon(Icons.link, color: widget.primarySwatch),// If I really want the link button back, here it is
+            //   onPressed: () async {
+            //     const url = Str.website;
+            //     if (await canLaunch(url)) await launch(url);
+            //   },
+            // )
+          ],
+        ),
+        body: Column(
+          children: _buildWheelAndSeekBar() +
+              _buildCurrentPractice() +
+              _buildPlayButton() +
+              _buildPracticeSwitch(),
+        ));
+  }
+
+  void buildAdditionalSilenceTimer() {
+    _player.positionStream.listen((state) {
+      const customDuration = Duration(minutes: 23, seconds: 9, milliseconds: 818);
+      if (_player.duration != null && customDuration.compareTo(_player.duration) == 0 && _customPracticeDuration > 23) {
+        if (state.inSeconds == 540 || state.inSeconds == 650 || state.inSeconds == 780) { // Positions in practice with silence
+          _customPracticeSleep = true;
+        } else if (_customPracticeSleep) {
+          _customPracticeSleep = false;
+          _player.pause();
+          var additionalSilence = (((_customPracticeDuration - 23) * 60) / 3);
+          continueAfterTimeout(additionalSilence.toInt());
+        }
+      }
+    });
   }
 
   _buildCircularSeekBar(double duration, double position) {
@@ -290,41 +351,6 @@ class _HomeState extends State<HomePage> {
     ];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          title: Text(Str.app_title,
-              style:
-                  TextStyle(color: widget.primarySwatch, fontFamily: "Nexa")),
-          centerTitle: true,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.link, color: widget.primarySwatch),
-              onPressed: () async {
-                const url = Str.website;
-                if (await canLaunch(url)) await launch(url);
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.access_time, color: widget.primarySwatch), // TODO: Write functions that opens Dialog
-              onPressed: () async {
-                _showCustomDurationDialog();
-              },
-            )
-          ],
-        ),
-        body: Column(
-          children: _buildWheelAndSeekBar() +
-              _buildCurrentPractice() +
-              _buildPlayButton() +
-              _buildPracticeSwitch(),
-        ));
-  }
-
   Future<void> _showCustomDurationDialog() async {
     return showDialog<void>(
       context: context,
@@ -334,9 +360,18 @@ class _HomeState extends State<HomePage> {
           title: const Text(Str.dialog_title),
           content: SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
-                Text(Str.dialog_descr)
-                // TODO Add https://pub.dev/packages/flutter_spinbox
+              children: <Widget>[
+                Text(Str.dialog_descr),
+                SpinBox(
+                  min: 23,
+                  value: _dialogCustomPracticeDuration.toDouble(),
+                  acceleration: 0.001,
+                  decoration: InputDecoration(
+                    labelText: 'Minutes'
+                  ),
+                  validator: (text) => text.isEmpty || int.parse(text) < 23 ? 'Invalid' : null,
+                  onChanged: (duration) => updateCustomPracticeDuration(duration),
+                )
               ],
             ),
           ),
@@ -345,7 +380,7 @@ class _HomeState extends State<HomePage> {
               child: const Text(Str.dialog_save),
               onPressed: () {
                 Navigator.of(context).pop();
-                // TODO Provide duration to spinner
+                _customPracticeDuration =_dialogCustomPracticeDuration;
               },
             ),
           ],
@@ -373,5 +408,11 @@ class _HomeState extends State<HomePage> {
         _player.setAsset(mp3);
       },
     );
+  }
+
+  updateCustomPracticeDuration(double duration) {
+    if (duration >= 23) {
+      _dialogCustomPracticeDuration = duration.toInt();
+    }
   }
 }
