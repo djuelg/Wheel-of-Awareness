@@ -31,10 +31,20 @@ dependencies:
   sleek_circular_slider: ^2.0.1
   just_audio: ^0.9.19
   url_launcher: ^6.0.20
+  flutter_spinbox: ^0.8.0
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.9.2"
   flutter_test:
     sdk: flutter
+
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "0x2C566E"
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
