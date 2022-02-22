@@ -54,16 +54,13 @@ class HomePage extends StatefulWidget {
 class _HomeState extends State<HomePage> {
   final _player = new AudioPlayer();
   var _customPracticeSleep = false;
-  var _customPracticeDuration = 23; // TODO Load from settings
-  var _dialogCustomPracticeDuration = 23; // TODO Load from settings
+  var _customPracticeDuration = 23; // TODO Load from settings and via BloC
+  var _dialogCustomPracticeDuration = 23; // TODO Load from settings and via BloC
   @override
   void initState() {
     super.initState();
     _player.setAsset('assets/23min.mp3');
   }
-
-  Timer continueAfterTimeout([int seconds]) =>
-      Timer(Duration(seconds: seconds), _player.play);
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +114,9 @@ class _HomeState extends State<HomePage> {
       }
     });
   }
+
+  Timer continueAfterTimeout([int seconds]) =>
+      Timer(Duration(seconds: seconds), _player.play);
 
   _buildCircularSeekBar(double duration, double position) {
     return SleekCircularSlider(
