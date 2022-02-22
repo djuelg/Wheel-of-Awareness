@@ -5,6 +5,7 @@ import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
+import 'package:flutter_background/flutter_background.dart';
 
 import 'str.dart';
 
@@ -64,7 +65,8 @@ class _HomeState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    buildAdditionalSilenceTimer();
+    buildBackgroundRunner();
+    buildPlayerEventStreams();
 
     return new Scaffold(
         backgroundColor: Colors.white,
@@ -99,11 +101,32 @@ class _HomeState extends State<HomePage> {
         ));
   }
 
-  void buildAdditionalSilenceTimer() {
-    _player.positionStream.listen((state) {
+  Future<bool> buildBackgroundRunner() async {
+    final androidConfig = FlutterBackgroundAndroidConfig(
+      notificationTitle: "Wheel of Awareness",
+      notificationText: "The Wheel of Awareness practice is running in the background",
+      notificationImportance: AndroidNotificationImportance.Default,
+      notificationIcon: AndroidResource(name: 'icon_v3_notification', defType: 'mipmap'), // Default is ic_launcher from folder mipmap
+    );
+    bool success = await FlutterBackground.initialize(androidConfig: androidConfig);
+    return success;
+  }
+
+  void buildPlayerEventStreams() {
+    // Stream to run in background during practice
+    _player.playerStateStream.listen((state) {
+      if (state.playing && !FlutterBackground.isBackgroundExecutionEnabled) {
+        FlutterBackground.enableBackgroundExecution();
+      } else if (state.processingState == ProcessingState.completed && FlutterBackground.isBackgroundExecutionEnabled) {
+        FlutterBackground.disableBackgroundExecution();
+      }
+    });
+
+    // Stream to pause to increase silence
+    _player.positionStream.listen((position) {
       const customDuration = Duration(minutes: 23, seconds: 9, milliseconds: 818);
       if (_player.duration != null && customDuration.compareTo(_player.duration) == 0 && _customPracticeDuration > 23) {
-        if (state.inSeconds == 540 || state.inSeconds == 650 || state.inSeconds == 780) { // Positions in practice with silence
+        if (position.inSeconds == 540 || position.inSeconds == 650 || position.inSeconds == 780) { // Positions in practice with silence
           _customPracticeSleep = true;
         } else if (_customPracticeSleep) {
           _customPracticeSleep = false;
