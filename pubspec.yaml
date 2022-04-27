@@ -66,6 +66,7 @@ flutter:
     - assets/20min.mp3
     - assets/23min.mp3
     - assets/30min.mp3
+    - assets/37min.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
